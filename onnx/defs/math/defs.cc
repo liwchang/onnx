@@ -1058,6 +1058,36 @@ ONNX_OPERATOR_SET_SCHEMA(
             "T",
             OpSchema::all_tensor_types(),
             "Constrain input and output types to all tensors."));
+			
+static const char* ExpandLike_ver9_doc = R"DOC(
+Broadcast the first tensor V with the shape of the second tensor L and the broadcast rule.
+It works like Expand(V, Shape(L)).
+)DOC";
+
+ONNX_OPERATOR_SET_SCHEMA(
+    ExpandLike,
+    9,
+    OpSchema()
+        .SetDoc(ExpandLike_ver9_doc)
+        .Input(0, "V", "An input tensor to copy values", "T1")
+        .Input(
+            1,
+            "L",
+            "Another input tensor to copy shape.",
+            "T2")
+        .Output(0, "output", "Output tensor", "T1")
+        .TypeConstraint(
+            "T1",
+            OpSchema::all_tensor_types(),
+            "Constrain input V and output types to all tensors.")
+        .TypeConstraint(
+            "T2",
+            OpSchema::all_tensor_types(),
+            "Constrain input L to all tensors.")	
+        .TypeAndShapeInferenceFunction([](InferenceContext& ctx) {
+          propagateElemTypeFromInputToOutput(ctx, 0, 0);
+          propagateShapeFromInputToOutput(ctx, 1, 0);
+        }));
 
 static const char* Sinh_ver9_doc = R"DOC(
 Calculates the hyperbolic sine of the given input tensor element-wise.
